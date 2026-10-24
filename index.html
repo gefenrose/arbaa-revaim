@@ -53,6 +53,11 @@ h1{font-size:clamp(30px,5vw,38px);line-height:1.2}
 .modal .date-time-field .clear-schedule[hidden],.modal .schedule-hint[hidden]{display:none}
 .modal .schedule-hint{font-size:15px;line-height:1.45;color:#6b6e7b;margin:7px 0 2px}
 .modal .remind-line input:disabled{opacity:.45}
+
+/* Keep every add control pinned to the bottom of its grid cell, regardless of text length. */
+.matrix>.quadrant{display:flex;flex-direction:column;min-width:0}
+.quadrant>.items{flex:1 1 auto;min-height:120px}
+.quadrant>.inline-add{flex:0 0 auto;margin-top:auto}
 </style></head><body><main><header><div><h1>ארבעה רבעים <span aria-hidden="true">✦</span></h1><p class="sub">מקום שקט לסדר את מה שחשוב לך</p></div></header><section class="matrix" id="matrix" aria-label="מטריצת אייזנהאואר"></section><p class="footnote">המשימות נשמרות במכשיר הזה בלבד · תזכורות פועלות כשהאפליקציה פתוחה</p><footer class="backup-footer"><button class="backup-button" id="export">ייצוא גיבוי</button><span aria-hidden="true">·</span><button class="backup-button" id="import">ייבוא גיבוי</button><input type="file" accept="application/json" id="file" hidden></footer></main><div id="dialog"></div><div id="toast-holder"></div><script>
 const quadrants=[{name:'חשוב ודחוף',tip:'לעשות עכשיו',color:'#f9e9e8',stroke:'#f0d8d7'},{name:'חשוב, לא דחוף',tip:'לתכנן לזמן המתאים',color:'#e8edf9',stroke:'#d9e2f3'},{name:'דחוף, לא חשוב',tip:'להאציל או לטפל במהירות',color:'#fbf0de',stroke:'#f0e4d0'},{name:'לא חשוב ולא דחוף',tip:'לשחרר או לשקול מחדש',color:'#e7f2e9',stroke:'#d5e9da'}];
 const STORE='arbaa-revaim-v1';let tasks=[];try{const loaded=JSON.parse(localStorage.getItem(STORE)||'[]');tasks=Array.isArray(loaded)?loaded.filter(x=>x&&typeof x.text==='string'&&Number.isInteger(x.q)&&x.q>=0&&x.q<4):[]}catch{}let editing=null;let touchDrag=null;const $=id=>document.getElementById(id);function save(){localStorage.setItem(STORE,JSON.stringify(tasks))}function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function toast(t){$('toast-holder').innerHTML='<div class="toast">'+escapeHtml(t)+'</div>';setTimeout(()=>$('toast-holder').replaceChildren(),2100)}function getSchedule(t){
