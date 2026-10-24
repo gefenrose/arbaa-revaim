@@ -1,1 +1,17 @@
-const CACHE='arbaa-revaim-v7';const assets=['./','./index.html','./manifest.webmanifest','./icon.svg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(assets)).then(()=>self.skipWaiting()))});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))})
+const CACHE='arbaa-revaim-v8';
+const ASSETS=['./manifest.webmanifest','./icon.svg'];
+self.addEventListener('install',event=>{
+ event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',event=>{
+ event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('arbaa-revaim-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',event=>{
+ const req=event.request;
+ if(req.method!=='GET')return;
+ if(req.mode==='navigate'||req.destination==='document'){
+  event.respondWith(fetch(new Request(req,{cache:'no-store'})).catch(()=>caches.match('./index.html').then(saved=>saved||Response.error())));
+  return;
+ }
+ event.respondWith(fetch(req).catch(()=>caches.match(req)));
+});
