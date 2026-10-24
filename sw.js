@@ -1,4 +1,4 @@
-const CACHE='arbaa-revaim-v8';
+const CACHE='arbaa-revaim-v9';
 const ASSETS=['./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
